@@ -1,0 +1,11 @@
+[package]
+name = "win-kill-gui"
+version = "0.1.0"
+authors = ["dkvz <github@dkvz.eu>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+nwg = {version = "^1.0.11", package = "native-windows-gui"}
+nwd = {version = "^1.0.3", package = "native-windows-derive"}
