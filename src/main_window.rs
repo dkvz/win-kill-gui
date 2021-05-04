@@ -6,7 +6,7 @@ pub const APP_TITLE: &'static str = "Kill that PID";
 
 #[derive(Default, NwgUi)]
 pub struct MainWindow {
-  #[nwg_control(size: (350, 400), position: (300, 300), title: APP_TITLE, flags: "WINDOW|VISIBLE")]
+  #[nwg_control(size: (350, 400), position: (1200, 300), title: APP_TITLE, flags: "WINDOW|VISIBLE")]
   #[nwg_events(
     OnWindowClose: [MainWindow::quit],
     OnKeyPress: [MainWindow::key_press(SELF, EVT_DATA)]
@@ -34,6 +34,19 @@ pub struct MainWindow {
 impl MainWindow {
 
   fn kill_button_click(&self) {
+    self.kill_pid();
+  }
+
+  fn key_press(&self, data: &EventData) {
+    match data {
+      EventData::OnKey(nwg::keys::_K) => {
+        self.kill_pid();
+      },
+      _ => ()
+    }
+  }
+
+  fn kill_pid(&self) {
     if let Ok(pid) = self.pid_edit.text().parse::<usize>() {
       match commands::cli_kill(pid) {
         Ok(output) => nwg::modal_info_message(&self.window, APP_TITLE, &output),
@@ -41,21 +54,10 @@ impl MainWindow {
       };
       return;
     }
-    //nwg::modal_info_message(&self.window, "Hello", &format!("Hello {}", self.pid_edit.text()));
     nwg::modal_error_message(&self.window, APP_TITLE, "Not a valid PID.");
-  }
-
-  fn key_press(&self, data: &EventData) {
-    match data {
-      EventData::OnKey(nwg::keys::_K) => {
-        nwg::modal_info_message(&self.window, APP_TITLE, "K was pressed");
-      },
-      _ => ()
-    }
   }
   
   fn quit(&self) {
-    //nwg::modal_info_message(&self.window, "Goodbye", &format!("Goodbye {}", self.name_edit.text()));
     // From what I understand, this closes the app:
     nwg::stop_thread_dispatch();
   }
