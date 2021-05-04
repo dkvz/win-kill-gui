@@ -11,6 +11,7 @@ I use the GNU toolchain instead of MSVC with no issues, I probably won't test bu
 
 ## Resources
 * Crate doc: https://docs.rs/native-windows-gui/1.0.11/native_windows_gui
+* Even better: https://gabdube.github.io/native-windows-gui/native-windows-docs/getting_started.html
 
 # TODO
 - [ ] I need some kind of "hotkey" shortcut or whatnot

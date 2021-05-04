@@ -1,5 +1,5 @@
 use nwd::NwgUi;
-use nwg;
+use nwg::{self, EventData};
 use super::commands;
 
 pub const APP_TITLE: &'static str = "Kill that PID";
@@ -7,7 +7,11 @@ pub const APP_TITLE: &'static str = "Kill that PID";
 #[derive(Default, NwgUi)]
 pub struct MainWindow {
   #[nwg_control(size: (350, 400), position: (300, 300), title: APP_TITLE, flags: "WINDOW|VISIBLE")]
-  #[nwg_events( OnWindowClose: [MainWindow::quit] )]
+  #[nwg_events(
+    OnWindowClose: [MainWindow::quit],
+    OnKeyPress: [MainWindow::key_press(SELF, EVT_DATA)]
+  )]
+  
   window: nwg::Window,
 
   #[nwg_layout(parent: window, spacing: 1)]
@@ -39,6 +43,15 @@ impl MainWindow {
     }
     //nwg::modal_info_message(&self.window, "Hello", &format!("Hello {}", self.pid_edit.text()));
     nwg::modal_error_message(&self.window, APP_TITLE, "Not a valid PID.");
+  }
+
+  fn key_press(&self, data: &EventData) {
+    match data {
+      EventData::OnKey(nwg::keys::_K) => {
+        nwg::modal_info_message(&self.window, APP_TITLE, "K was pressed");
+      },
+      _ => ()
+    }
   }
   
   fn quit(&self) {
