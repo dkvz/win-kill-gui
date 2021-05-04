@@ -1,3 +1,5 @@
+#![windows_subsystem = "windows"]
+
 use nwg::{self, NativeUi};
 mod main_window;
 mod commands;
