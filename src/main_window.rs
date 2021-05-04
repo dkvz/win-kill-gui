@@ -1,28 +1,48 @@
 use nwd::NwgUi;
 use nwg;
+use super::commands;
+
+pub const APP_TITLE: &'static str = "Kill that PID";
 
 #[derive(Default, NwgUi)]
 pub struct MainWindow {
-  #[nwg_control(size: (300, 135), position: (300, 300), title: "Kill that app", flags: "WINDOW|VISIBLE")]
-  #[nwg_events( OnWindowClose: [MainWindow::say_goodbye] )]
+  #[nwg_control(size: (350, 400), position: (300, 300), title: APP_TITLE, flags: "WINDOW|VISIBLE")]
+  #[nwg_events( OnWindowClose: [MainWindow::quit] )]
   window: nwg::Window,
 
-  #[nwg_control(text: "Enter PID here", size: (280, 35), position: (10, 10), focus: true)]
-  name_edit: nwg::TextInput,
+  #[nwg_layout(parent: window, spacing: 1)]
+  grid: nwg::GridLayout,
 
-  #[nwg_control(text: "Kill it!", size: (280, 70), position: (10, 50))]
-  #[nwg_events( OnButtonClick: [MainWindow::say_hello] )]
-  hello_button: nwg::Button
+  #[nwg_control(text: "Enter PID here:")]
+  #[nwg_layout_item(layout: grid, row: 0, col: 0)]
+  pid_edit_label: nwg::Label,
+
+  #[nwg_control(focus: true)]
+  #[nwg_layout_item(layout: grid, row: 1, col: 0)]
+  pid_edit: nwg::TextInput,
+
+  #[nwg_control(text: "Kill it!")]
+  #[nwg_layout_item(layout: grid, row: 2, col: 0, row_span: 3)]
+  #[nwg_events( OnButtonClick: [MainWindow::kill_button_click] )]
+  kill_button: nwg::Button
 }
 
 impl MainWindow {
 
-  fn say_hello(&self) {
-    nwg::modal_info_message(&self.window, "Hello", &format!("Hello {}", self.name_edit.text()));
+  fn kill_button_click(&self) {
+    if let Ok(pid) = self.pid_edit.text().parse::<usize>() {
+      match commands::cli_kill(pid) {
+        Ok(output) => nwg::modal_info_message(&self.window, APP_TITLE, &output),
+        Err(err) => nwg::modal_error_message(&self.window, APP_TITLE, &err.to_string())
+      };
+      return;
+    }
+    //nwg::modal_info_message(&self.window, "Hello", &format!("Hello {}", self.pid_edit.text()));
+    nwg::modal_error_message(&self.window, APP_TITLE, "Not a valid PID.");
   }
   
-  fn say_goodbye(&self) {
-    nwg::modal_info_message(&self.window, "Goodbye", &format!("Goodbye {}", self.name_edit.text()));
+  fn quit(&self) {
+    //nwg::modal_info_message(&self.window, "Goodbye", &format!("Goodbye {}", self.name_edit.text()));
     // From what I understand, this closes the app:
     nwg::stop_thread_dispatch();
   }

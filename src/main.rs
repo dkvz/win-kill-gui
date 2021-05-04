@@ -1,5 +1,6 @@
 use nwg::{self, NativeUi};
 mod main_window;
+mod commands;
 use main_window::MainWindow;
 
 fn main() {
